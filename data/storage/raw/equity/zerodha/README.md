@@ -9,7 +9,7 @@ The dataset is designed for academic research, quantitative finance, machine lea
 ## 📁 Dataset Structure
 
 **Time Period:**
-- [April 1, 2015 – March 31, 2025 (10 Years)](https://www.jioaicloud.com/l/?u=t7lG0tzdIIJ3MsClOzpMwIf-2uF2arWAyki_uALGGXYoA95LzOUKHkDGqrs1tYtDPrF)
+- [April 1, 2015 – March 31, 2025 (10 Years)](https://www.jiocloud.com/l/?u=nJeSTwHnU5GtuaLD7aYu97WZUO0E-HJCtLqWE-q4gD3VbsX1gBXZVMyTO5OGzLd-hkW)
 
 **Timeframes:**
 - 1-Minute
@@ -54,9 +54,9 @@ Due to large file sizes, the datasets are hosted on Jio Cloud:
 
 | Timeframe | Download Link | Size |
 |-----------|----------------|-----|
-| 1-Minute  | 🔗 [Link](https://www.jioaicloud.com/l/?u=4S95YBAHCDfyLBZjENZmesps5hSpeFZuEHLMdK5DTSicCRGBReCNJ1Os5oAURrfOVaU) | 52GB |
-| 5-Minute | 🔗 [Link](https://www.jioaicloud.com/l/?u=yWR_riafbBPRr6V660uZL-nZTR1his8G6LY8Eyv2kSOp1v5H7UoXJws8M5stiVGsjqE) | 12GB |
-| Daily | 🔗 [Link](https://www.jioaicloud.com/l/?u=u01ixDBc-Brft-HnvIDWRm71lyfurvyFPzDEPo6VlUu8Pew6ykFDnJ1sv1f-M30aOe5) | 0.2GB |
+| 1-Minute  | 🔗 [Link](https://www.jioaicloud.com/l/?u=2UKMK57g5ujjKzMZ_hOpABOS6sCm6cHWUcnEK6iww7XSQIoGAFVFM3BZSOVhlgI8hIb) | 52GB |
+| 5-Minute | 🔗 [Link](https://www.jioaicloud.com/l/?u=gXhSnTUGz7uSuyRuFj1qP3z73FT_KPAZoayYKWMq8260qH66XYtx093oktuDxNZLMHW) | 12GB |
+| Daily | 🔗 [Link](https://www.jioaicloud.com/l/?u=fi6wzqgqW5idJd5Ez6FObFU40wae198jWpMgjXwwRUfnDmb0eUMqDwoH6r7cS1ElVaU) | 0.2GB |
 
 - Any further change in links will be updated here itself. 
 ---
