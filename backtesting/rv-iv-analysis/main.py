@@ -2,7 +2,7 @@ import pandas as pd
 from datetime import datetime
 from rv_iv_analysis import process_volatility_analysis
 from track_prices import *
-from telegram_bot import send_to_me
+from utilities.telegram_bot import send_to_me
 import time
 import asyncio
 

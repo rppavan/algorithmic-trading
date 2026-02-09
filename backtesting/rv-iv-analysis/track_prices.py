@@ -14,7 +14,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 from broker.shoonya.config import *
 # import broker.shoonya.basicfunctions as bf
-from telegram_bot import send_to_me
+from utilities.telegram_bot import send_to_me
 
 # Login to Shoonya API
 logging.info("Logging into Shoonya API...")

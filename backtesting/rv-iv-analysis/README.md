@@ -14,13 +14,17 @@ A systematic approach to analyze weekly price movements in indices and stocks to
 
 #### Absolute Change Calculation
 ```
-Absolute Change = |Thursday Close - Friday Close| / Friday Close * 100
+Absolute Change = |Thursday Close Price - Friday Close Price| / Friday Close Price * 100
 ```
 - Measures directional movement regardless of up/down
 - Captures the actual realized volatility over the week
 - Forms basis for options strategy profitability analysis
 
-#### Peak Change Analysis
+#### Peak Change Calculation
+```
+High =  All time high price of index/stock in the next 4 trading sessions (till expiry).
+Low  =  All time low  price of index/stock in the next 4 trading sessions (till expiry).
+```
 ```
 Peak Change = MAX(|High - Friday Close|, |Low - Friday Close|) / Friday Close * 100
 ```
@@ -69,19 +73,19 @@ Profit Scenarios:
 
 #### Input Requirements
 ```
-- Historical OHLCV data (28+ years recommended)
-- Friday-Thursday weekly cycles
-- Clean price data without gaps
-- Expandable to any index or stock
+- Historical OHLCV data (I would recommend data of atleast 10 years...)
+- EOD data would be enough for analysis part.
+- We would need the historical option data to conduct a proper backtest.
 ```
 
 #### Analysis Steps
 ```
 1. EXTRACT → Friday close to Thursday close periods
-2. CALCULATE → Absolute and peak change percentages
+2. CALCULATE → Absolute & Peak Change Percentages
 3. RANK → Percentile distribution analysis
 4. VALIDATE → Statistical significance testing
 5. BACKTEST → Historical options data validation (pending)
+6. FORWARDTEST → A better alternative if we don't have options data
 ```
 
 ## Key Research Findings
@@ -114,7 +118,7 @@ Next Steps:
 - **Indices**: Nifty50, BankNifty, Sensex, sectoral indices
 - **Large Cap Stocks**: High liquidity stocks with active options
 - **Mid Cap Stocks**: Stocks with sufficient options volume
-- **International Markets**: Adaptable to global indices (SPY, QQQ, etc.)
+- **International Markets**: Adaptable to global indices
 
 ### 2. Entry Criteria
 - **Timing**: Friday close entries for optimal IV conditions
@@ -124,9 +128,8 @@ Next Steps:
 
 ### 3. Risk Management
 - **Position Sizing**: Risk only 1-2% of capital per trade
-- **Stop Loss**: Exit if premium decays 50% without movement
+- **Stop Loss**: Exit if premium decays without movement
 - **Profit Taking**: Close positions when movement exceeds 1.5%
-- **Portfolio Limits**: Maximum 5-10 concurrent positions
 
 ## Statistical Validation
 
@@ -149,10 +152,9 @@ MIN_MOVEMENT = 1.0      # Target movement percentage
 ```
 Pending Validation:
 - Historical options premium data
-- Bid-ask spread analysis
-- Transaction cost impact
-- Slippage calculations
-- Greeks behavior analysis
+- Greeks behaviour should be taken care of
+- Slippage calculations inclusions
+- Generating trades, and analysing them
 ```
 
 ## Expected Outcomes
@@ -169,7 +171,7 @@ Pending Validation:
 - **Seasonal Effects**: Identify high-probability periods
 - **Regime Analysis**: Strategy performance across market conditions
 
-## Future Enhancements
+## Plausible Enhancements
 
 ### 1. Multi-Asset Analysis
 - Expand to all NSE indices and liquid stocks
@@ -181,7 +183,7 @@ Pending Validation:
 - Dynamic strike selection based on IV levels
 - Multi-timeframe analysis (2-day, 3-day cycles)
 - Volatility forecasting models
-- Machine learning integration for pattern recognition
+- Integrating ML models to predict change in IV
 
 ### 3. Risk Management Evolution
 - Real-time IV monitoring systems
@@ -190,5 +192,3 @@ Pending Validation:
 - Portfolio-level risk optimization
 
 ---
-
-*Systematic approach to capturing weekly volatility through options strategies*
