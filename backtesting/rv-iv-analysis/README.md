@@ -1,7 +1,7 @@
 # Weekly Volatility Analysis for Options Trading
 
 ## Overview
-A systematic approach to analyze weekly price movements in indices and stocks to identify profitable options trading opportunities. The analysis reveals that 90% of the time, markets move more than 1% from Friday close to Thursday close, creating consistent opportunities for long straddle/strangle strategies.
+A systematic approach to analyze weekly price movements in indices and stocks to identify profitable options trading opportunities. The analysis reveals that 90% of the time, markets move more than 1% from Friday Close Price to Thursday Close Price (in the next week), creating consistent opportunities for long straddle/strangle strategies.
 
 ## Research Methodology
 
@@ -13,6 +13,10 @@ A systematic approach to analyze weekly price movements in indices and stocks to
 ### 2. Core Measurements
 
 #### Absolute Change Calculation
+```
+Friday Close Price = Close price of index/stock in the current week, on weekend.    (Eg : Feb 06 2026 - Friday)
+Thursday Close Price = Close price of index/stock in the next week, on expiry day.  (Eg : Feb 12 2026 - Thursday)
+```
 ```
 Absolute Change = |Thursday Close Price - Friday Close Price| / Friday Close Price * 100
 ```
