@@ -81,7 +81,7 @@ def scheduler():
     straddle = fetch_straddle_data()
     expiry = straddle['expiry_day']
     process_volatility_analysis(specific_file="0000_NIFTY.csv", start_day=today, end_day=expiry)
-    nifty_df = pd.read_csv("backtestresults/volatility/NIFTY.csv")
+    nifty_df = pd.read_csv("results/rv-iv-analysis/NIFTY.csv")
     
     last_message_time = 0
     

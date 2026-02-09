@@ -33,14 +33,23 @@ def login():
     app_key = os.getenv('SHOONYA_APP_KEY')
     imei = os.getenv('SHOONYA_IMEI')
 
+    # print(user, pwd, otp, vc, app_key, imei)
+
     # Calling Login Method on api Instance (created at the start of the program)
     ret = api.login(userid=user, password=pwd, twoFA=otp, vendor_code=vc, api_secret=app_key, imei=imei)
+    if ret and ret.get('stat') == 'Ok':
+        logging.info("Login successful")
+        return ret
+    else:
+        logging.error(f"Login failed: {ret}")
+        return None
     return ret
 
 def logout():
     api.logout()
 
-login()
+val = login()
+print(val)
 
 def start_websocket(order_update_callback, subscribe_callback, socket_open_callback):
     api.start_websocket(order_update_callback=order_update_callback,

@@ -5,7 +5,7 @@ from datetime import datetime
 
 # Configuration
 FOLDER_PATH = "data/storage/processed/equity/zerodha/2015/day"
-OUTPUT_FOLDER = "backtestresults/volatility"
+OUTPUT_FOLDER = r'backtesting\rv-iv-analysis\results'
 FILE_LIMIT = 1
 START_DAY = "Friday"
 END_DAY = "Thursday"
@@ -16,8 +16,19 @@ timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 output_file = os.path.join(OUTPUT_FOLDER, f"volatility_analysis_{timestamp}.txt")
 results_text = []
 
-# Function to compute absolute change percentage for all startday-to-endday periods
 def get_weekly_abs_changes(df, start_day, end_day):
+
+    """
+    
+    :param df:          dataframe with columns - Date & OHLCV 
+    :param start_day:   the day at which we would like to open our positions  (Eg : Friday)
+    :param end_day:     the day at which we would like to close our positions (Eg : Thursday)
+
+    :return:            list of tuples containing (start_date, absolute_change_percentage, max_peak_change)
+                        calculation logic is defined excellently in readme file
+
+    """
+
     # Calculate expected days between start and end day
     days_map = {"Monday": 0, "Tuesday": 1, "Wednesday": 2, "Thursday": 3, "Friday": 4, "Saturday": 5, "Sunday": 6}
     start_num = days_map[start_day]
@@ -82,7 +93,21 @@ def get_weekly_abs_changes(df, start_day, end_day):
     return results
 
 def process_volatility_analysis(folder_path=FOLDER_PATH, output_folder=OUTPUT_FOLDER, file_limit=FILE_LIMIT, start_day=START_DAY, end_day=END_DAY, specific_file=None):
-    """Process volatility analysis for files and generate CSV outputs."""
+    """
+
+    :param folder_path:     path to folder containing csv files with OHLCV data.
+    :param output_folder:   path to folder to store results
+    :param file_limit:      number of files to process in the folder
+    :param start_day:       the day at which we would like to open our positions  (Eg : Friday)
+    :param end_day:         the day at which we would like to close our positions (Eg : Thursday)
+    :param specific_file:   if we want to process only one specific file, we  can use this
+
+    Processes Included:
+        1) Filters the stocks/indicies files that are to be analysed
+        2) Calculates the average absolute and peak changes using another function
+        3) Uses the results to create a percentile analysis and save it to a csv file
+
+    """
     os.makedirs(output_folder, exist_ok=True)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     
@@ -239,6 +264,7 @@ def process_volatility_analysis(folder_path=FOLDER_PATH, output_folder=OUTPUT_FO
             results_text.append(str(peak_table.round(2)))
 
 if __name__ == '__main__':
+
     results_text.append(f"Start day\t-\t{START_DAY}")
     results_text.append(f"End day\t\t-\t{END_DAY}")
     

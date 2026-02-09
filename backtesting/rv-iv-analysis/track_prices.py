@@ -19,6 +19,7 @@ from utilities.telegram_bot import send_to_me
 # Login to Shoonya API
 logging.info("Logging into Shoonya API...")
 try:
+    # login()
     limits = api.get_limits()
     logging.info(f"Login successful. Available cash: {limits.get('cash', 0)}")
 except Exception as e:
@@ -213,7 +214,7 @@ def calculate_long_straddle_price(symbol='Nifty 50'):
                 
                 return result
             else:
-                print(f"Option chain failed: {option_chain.get('emsg', 'Unknown')}")
+                print(f"Failed to fetch option chain failed: {option_chain.get('emsg', 'Unknown')}")
                 return None
         else:
             error_msg = ret.get('emsg', 'Unknown') if ret else 'No response'
