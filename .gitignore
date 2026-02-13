@@ -14,3 +14,7 @@ venv/
 # IDE
 .vscode/
 .idea/
+
+# data storage folders
+data/storage/options/
+broker/upstox/instruments/complete.json
