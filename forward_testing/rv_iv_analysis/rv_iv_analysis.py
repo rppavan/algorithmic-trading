@@ -19,6 +19,8 @@ import json
 from dotenv import load_dotenv
 from datetime import datetime
 
+from backtesting.rv_iv_analysis.rv_iv_analysis import *
+
 
 
 load_dotenv()
@@ -135,6 +137,14 @@ option_chain_url = "https://api.upstox.com/v2/option/chain"
 
 today = datetime.today().strftime("%A")
 # print(f"Today is {today}")
+
+nifty_data = process_volatility_analysis(specific_file="0000_NIFTY.csv")
+sensex_data = process_volatility_analysis(specific_file="0000_SENSEX.csv")
+
+print(nifty_data)
+print(sensex_data)
+
+exit()
 
 for name, details in underlying_instruments.items():
 
