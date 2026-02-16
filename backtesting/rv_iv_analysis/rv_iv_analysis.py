@@ -263,6 +263,8 @@ def process_volatility_analysis(folder_path=FOLDER_PATH, output_folder=OUTPUT_FO
             results_text.append("\nMonthly Max Peak Change Percentages Table:\n")
             results_text.append(str(peak_table.round(2)))
 
+        return results_text
+
 if __name__ == '__main__':
 
     results_text.append(f"Start day\t-\t{START_DAY}")

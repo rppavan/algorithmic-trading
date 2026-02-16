@@ -29,7 +29,8 @@ headers = {
 instruments = {
     
     'NIFTY50': {'instrument_key': 'NSE_INDEX|Nifty 50'},
-    'SENSEX30': {'instrument_key': 'BSE_INDEX|SENSEX'}
+    'SENSEX30': {'instrument_key': 'BSE_INDEX|SENSEX'},
+    'BANKNIFTY': {'instrument_key': 'NSE_INDEX|Nifty Bank'}
 
 }
 
