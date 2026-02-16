@@ -5,7 +5,7 @@ from datetime import datetime
 
 # Configuration
 FOLDER_PATH = "data/storage/processed/equity/zerodha/2015/day"
-OUTPUT_FOLDER = r'backtesting\rv-iv-analysis\results'
+OUTPUT_FOLDER = r'backtesting\rv_iv_analysis\results'
 FILE_LIMIT = 1
 START_DAY = "Friday"
 END_DAY = "Thursday"
@@ -263,7 +263,7 @@ def process_volatility_analysis(folder_path=FOLDER_PATH, output_folder=OUTPUT_FO
             results_text.append("\nMonthly Max Peak Change Percentages Table:\n")
             results_text.append(str(peak_table.round(2)))
 
-        return results_text
+        return percentile_data
 
 if __name__ == '__main__':
 

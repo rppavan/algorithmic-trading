@@ -50,6 +50,8 @@ async def send_to_me(message):
     chat_ids = os.getenv('CHAT_IDS').split(',')
     for chat_id in chat_ids:
         await send_message(int(chat_id.strip()), message)
+    
+    # print(message)
 
 # Function to start the bot
 def start_telegram_bot():

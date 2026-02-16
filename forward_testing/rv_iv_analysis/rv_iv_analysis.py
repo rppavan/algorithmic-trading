@@ -13,20 +13,46 @@ To do in this script:
 
 '''
 
+'''
+
+To Do:
+
+    0) Document the code.
+
+    1) Remove the redundant, commented parts.
+    2) Make a function to start finding for trades from 15:00/15:10 to 15:30
+    3) Store the message and send the messages after opening trades, to reduce the slippages.
+
+    4) Add the logic to have a single active trade in each index, and save trades to a csv.
+    5) If trades are opened, track the prices of options that are bought.
+
+    6) Add telegram messages for unvoluntary exits from script
+
+    7) Automate everything to deploy of docker
+    8) Deploy on docker
+
+
+'''
+
 import requests
 import os
 import json
+import sys
+import asyncio
 from dotenv import load_dotenv
 from datetime import datetime
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+
 from backtesting.rv_iv_analysis.rv_iv_analysis import *
+from utilities.telegram_bot import send_to_me
 
 
 
 load_dotenv()
 access_token = os.getenv("UPSTOX_ACCESS_TOKEN")
 
-print(f"{access_token=}")
+# print(f"{access_token=}")
 
 # Code to get LTP of the underlying instruments
 
@@ -138,21 +164,67 @@ option_chain_url = "https://api.upstox.com/v2/option/chain"
 today = datetime.today().strftime("%A")
 # print(f"Today is {today}")
 
-nifty_data = process_volatility_analysis(specific_file="0000_NIFTY.csv")
-sensex_data = process_volatility_analysis(specific_file="0000_SENSEX.csv")
+nifty_data = process_volatility_analysis(specific_file="0000_NIFTY.csv", start_day=today, end_day="Tuesday")
+sensex_data = process_volatility_analysis(specific_file="0000_SENSEX.csv", start_day=today, end_day="Thursday")
 
-print(nifty_data)
-print(sensex_data)
+import pandas as pd
 
-exit()
+# print("\n===== NIFTY DATA =====")
+# print(pd.DataFrame(nifty_data).to_string(index=False))
+
+# print("\n===== SENSEX DATA =====")
+# print(pd.DataFrame(sensex_data).to_string(index=False))
+
+# df_nifty = pd.DataFrame(nifty_data)
+# df_sensex = pd.DataFrame(sensex_data)
+
+# print("\n===== NIFTY DATA =====")
+# for percentile in [1, 2, 3, 5]:
+#     row = df_nifty[df_nifty['Percentile'] == percentile]
+#     if not row.empty:
+#         print(f"Percentile {percentile}: {row['Peak Abs Change Percentage'].values[0]:.2f}%")
+
+# print("\n===== SENSEX DATA =====")
+# for percentile in [1, 2, 3, 5]:
+#     row = df_sensex[df_sensex['Percentile'] == percentile]
+#     if not row.empty:
+#         print(f"Percentile {percentile}: {row['Peak Abs Change Percentage'].values[0]:.2f}%")
+
+df_nifty = pd.DataFrame(nifty_data)
+df_sensex = pd.DataFrame(sensex_data)
+
+# print("\n===== NIFTY DATA =====")
+# for target in [1, 2, 3, 5]:
+#     row = df_nifty[df_nifty['Peak Abs Change Percentage'] >= target].iloc[-1]
+#     print(f"Peak Change {target}% → Percentile {row['Percentile']}")
+
+# print("\n===== SENSEX DATA =====")
+# for target in [1, 2, 3, 5]:
+#     row = df_sensex[df_sensex['Peak Abs Change Percentage'] >= target].iloc[-1]
+#     print(f"Peak Change {target}% → Percentile {row['Percentile']}")
+
+underlying_instruments["NIFTY50"]["rv_data"] = df_nifty
+underlying_instruments["SENSEX30"]["rv_data"] = df_sensex
+
+# exit()
 
 for name, details in underlying_instruments.items():
+
+    msg = []
+
+    def print_msg(s, text=msg):
+        print(s)
+        text.append(s)
+
+    print_msg(f"RV analysis for {name}\n")
 
     instrument_key = details["instrument_key"]
     expiry_date = details.get("latest_expiry")
 
+    rv_data = details.get("rv_data", [])
+
     if not expiry_date:
-        print(f"No expiry found for {name}")
+        print_msg(f"No expiry found for {name}")
         continue
 
     # Convert expiry string to weekday
@@ -160,14 +232,14 @@ for name, details in underlying_instruments.items():
 
     # Check if expiry day exists in mapping
     if expiry_day not in trade_opening_days:
-        print(f"{name} expiry on {expiry_day} → Skipping (not configured)")
+        print_msg(f"{name} expiry on {expiry_day} → Skipping (not configured)")
         continue
 
     trade_open_day = trade_opening_days[expiry_day]
 
     # Check if today is correct opening day
     # if today != trade_open_day:
-    #     print(f"{name} expiry on {expiry_day}, trade opens on {trade_open_day} → Today mismatch, skipping")
+    #     print_msg(f"{name} expiry on {expiry_day}, trade opens on {trade_open_day} → Today mismatch, skipping")
     #     continue
 
     # If conditions satisfied → Fetch Option Chain
@@ -177,22 +249,22 @@ for name, details in underlying_instruments.items():
         "expiry_date": expiry_date
     }
 
-    print(f"\nFetching option chain for {name} | Expiry: {expiry_date}\n")
+    # print_msg(f"\nFetching option chain for {name} | Expiry: {expiry_date}\n")
 
     response = requests.get(option_chain_url, headers=headers, params=params)
 
     if response.status_code != 200:
-        print(f"Error fetching option chain: {response.status_code}")
+        print_msg(f"Error fetching option chain: {response.status_code}")
         continue
 
     try:
         chain_data = response.json().get("data", [])
         underlying_instruments[name]["option_chain"] = chain_data
 
-        print(f"Fetched {len(chain_data)} strikes for {name}")
-        print(f"LTP of {name}: {underlying_instruments[name]["ltp"]}")
-        print(f"Latest Expiry: {underlying_instruments[name]["latest_expiry"]}")
-        print(f"Lot Size: {underlying_instruments[name]["lot_size"]}\n")
+        # print_msg(f"Fetched {len(chain_data)} strikes for {name}")
+        print_msg(f"Spot Price of {name}: {underlying_instruments[name]["ltp"]}")
+        print_msg(f"Latest Expiry: {underlying_instruments[name]["latest_expiry"]}")
+        print_msg(f"Lot Size: {underlying_instruments[name]["lot_size"]}\n")
 
         ltp = underlying_instruments[name]["ltp"]
 
@@ -223,17 +295,17 @@ for name, details in underlying_instruments.items():
                     min_put_diff = diff
                     nearest_put = strike_data
 
-        # print("\n===== 0.5% OTM Selection =====")
+        # print_msg("\n===== 0.5% OTM Selection =====")
 
         if nearest_call:
             call_cost = nearest_call['call_options']['market_data']['ltp']
-            print(f"Call Strike: {nearest_call['strike_price']}")
-            print(f"Call LTP: {call_cost}")
+            print_msg(f"Call Strike: {nearest_call['strike_price']}")
+            print_msg(f"Call LTP: {call_cost}\n")
 
         if nearest_put:
             put_cost = nearest_put['put_options']['market_data']['ltp']
-            print(f"Put Strike: {nearest_put['strike_price']}")
-            print(f"Put LTP: {put_cost}")
+            print_msg(f"Put Strike: {nearest_put['strike_price']}")
+            print_msg(f"Put LTP: {put_cost}\n")
 
         if nearest_call and nearest_put:
 
@@ -249,16 +321,67 @@ for name, details in underlying_instruments.items():
             upper_be_percent = ((upper_breakeven - ltp) / ltp) * 100
             lower_be_percent = ((ltp - lower_breakeven) / ltp) * 100
 
-            print(f"\nTotal Cost of Setup = {total_cost}")
-            print(f"Cost as % of Spot = {cost_percent:.4f}%")
+            upper_target = call_strike + (2 * total_cost)
+            lower_target = put_strike - (2 * total_cost)
+
+            upper_target_percent = ((upper_target - ltp) / ltp) * 100
+            lower_target_percent = ((ltp - lower_target) / ltp) * 100
+
+            abs_max_move = max(upper_target_percent, lower_target_percent)
+
+            target = abs_max_move
+
+            row = rv_data[rv_data['Peak Abs Change Percentage'] >= target].iloc[-1]
+            target_percentile = row['Percentile']
+
+            print_msg(f"Total Cost of Setup = {total_cost}")
+            print_msg(f"Cost as % of Spot = {cost_percent:.2f}%\n")
             
-            print(f"Upper Breakeven = {upper_breakeven}  ({upper_be_percent:.4f}% move up)")
-            print(f"Lower Breakeven = {lower_breakeven}  ({lower_be_percent:.4f}% move down)")
+            print_msg(f"Upper Breakeven = {upper_breakeven}  (+{upper_be_percent:.2f}%)")
+            print_msg(f"Lower Breakeven = {lower_breakeven}  (-{lower_be_percent:.2f}%)\n")
 
+            print_msg("100% Profit Targets")
+            print_msg(f"Upper Target = {upper_target}  (+{upper_target_percent:.2f}%)")
+            print_msg(f"Lower Target = {lower_target}  (-{lower_target_percent:.2f}%)\n")
 
-        # Here (I am asking about printing here...)
+            print_msg(f"Required Target Change {target:.2f}%")
+            print_msg(f"Probability is {target_percentile}%")
 
+            if msg:  # Only send if msg is not empty
+                asyncio.run(send_to_me("\n".join(msg)))
+            msg = []
 
+            # print(f"\nMaximum Abs Move = {abs_max_move:.2f}%")
+
+            required_probability = 90
+
+            if target_percentile >= required_probability:
+
+                trade_data = []
+
+                print_msg(f"\nFound a profitabile setup for {name}\n", trade_data)
+                print_msg(f"Probability of 100% Profit = {target_percentile}% (≥ {required_probability}%)", trade_data)
+                # print_msg("Trade is opened\n", trade_data)
+
+                print_msg(f"Trade Details", trade_data)
+                print_msg(f"Spot Price - {ltp}\n", trade_data)
+
+                print_msg(f"Call Strike - {call_strike}", trade_data)
+                print_msg(f"Call LTP - {call_cost}\n", trade_data)
+                
+                print_msg(f"Put Strike - {put_strike}", trade_data)
+                print_msg(f"Put LTP - {put_cost}\n", trade_data)
+
+                print_msg(f"Total Cost - {total_cost}\n", trade_data)
+
+                print_msg(f"Upper Breakeven - {upper_breakeven} (+{upper_be_percent:.2f}%)", trade_data)
+                print_msg(f"Upper Target - {upper_target} (+{upper_target_percent:.2f}%)\n", trade_data)
+
+                print_msg(f"Lower Breakeven - {lower_breakeven} (-{lower_be_percent:.2f}%)", trade_data)
+                print_msg(f"Lower Target - {lower_target} (-{lower_target_percent:.2f}%)\n", trade_data)
+                
+                if trade_data:  # Only send if trade_data is not empty
+                    asyncio.run(send_to_me("\n".join(trade_data)))
 
     except ValueError:
         print("Invalid JSON response")
