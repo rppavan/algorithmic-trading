@@ -47,19 +47,25 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 from backtesting.rv_iv_analysis.rv_iv_analysis import *
 from utilities.telegram_bot import send_to_me
 
-
-
 load_dotenv()
 access_token = os.getenv("UPSTOX_ACCESS_TOKEN")
-
-# print(f"{access_token=}")
-
-# Code to get LTP of the underlying instruments
 
 underlying_instruments = {
     'NIFTY50': {'instrument_key': 'NSE_INDEX|Nifty 50'},
     'SENSEX30': {'instrument_key': 'BSE_INDEX|SENSEX'}
 }
+
+nifty_data = process_volatility_analysis(specific_file="0000_NIFTY.csv", start_day=today, end_day="Tuesday")
+sensex_data = process_volatility_analysis(specific_file="0000_SENSEX.csv", start_day=today, end_day="Thursday")
+
+df_nifty = pd.DataFrame(nifty_data)
+df_sensex = pd.DataFrame(sensex_data)
+
+underlying_instruments["NIFTY50"]["rv_data"] = df_nifty
+underlying_instruments["SENSEX30"]["rv_data"] = df_sensex
+
+# Code to get LTP of the underlying instruments
+
 
 base_url = "https://api.upstox.com/v3/market-quote/ltp"
 
@@ -107,7 +113,7 @@ for name, details in underlying_instruments.items():
 
 print()
 
-# Code get option contracts i.e expiries for each underlying
+# Code get option contracts i.e expiries & lot sizes for each underlying
 
 option_contract_url = "https://api.upstox.com/v2/option/contract"
 
@@ -149,8 +155,6 @@ for name, details in underlying_instruments.items():
         print("Invalid JSON response")
         print(response.text)
 
-print()
-
 
 # Code fetch option chains
 
@@ -163,50 +167,6 @@ option_chain_url = "https://api.upstox.com/v2/option/chain"
 
 today = datetime.today().strftime("%A")
 # print(f"Today is {today}")
-
-nifty_data = process_volatility_analysis(specific_file="0000_NIFTY.csv", start_day=today, end_day="Tuesday")
-sensex_data = process_volatility_analysis(specific_file="0000_SENSEX.csv", start_day=today, end_day="Thursday")
-
-import pandas as pd
-
-# print("\n===== NIFTY DATA =====")
-# print(pd.DataFrame(nifty_data).to_string(index=False))
-
-# print("\n===== SENSEX DATA =====")
-# print(pd.DataFrame(sensex_data).to_string(index=False))
-
-# df_nifty = pd.DataFrame(nifty_data)
-# df_sensex = pd.DataFrame(sensex_data)
-
-# print("\n===== NIFTY DATA =====")
-# for percentile in [1, 2, 3, 5]:
-#     row = df_nifty[df_nifty['Percentile'] == percentile]
-#     if not row.empty:
-#         print(f"Percentile {percentile}: {row['Peak Abs Change Percentage'].values[0]:.2f}%")
-
-# print("\n===== SENSEX DATA =====")
-# for percentile in [1, 2, 3, 5]:
-#     row = df_sensex[df_sensex['Percentile'] == percentile]
-#     if not row.empty:
-#         print(f"Percentile {percentile}: {row['Peak Abs Change Percentage'].values[0]:.2f}%")
-
-df_nifty = pd.DataFrame(nifty_data)
-df_sensex = pd.DataFrame(sensex_data)
-
-# print("\n===== NIFTY DATA =====")
-# for target in [1, 2, 3, 5]:
-#     row = df_nifty[df_nifty['Peak Abs Change Percentage'] >= target].iloc[-1]
-#     print(f"Peak Change {target}% → Percentile {row['Percentile']}")
-
-# print("\n===== SENSEX DATA =====")
-# for target in [1, 2, 3, 5]:
-#     row = df_sensex[df_sensex['Peak Abs Change Percentage'] >= target].iloc[-1]
-#     print(f"Peak Change {target}% → Percentile {row['Percentile']}")
-
-underlying_instruments["NIFTY50"]["rv_data"] = df_nifty
-underlying_instruments["SENSEX30"]["rv_data"] = df_sensex
-
-# exit()
 
 for name, details in underlying_instruments.items():
 
