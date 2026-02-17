@@ -16,7 +16,7 @@ The dataset is intended for:
 
 - **Start Date:** October 03, 2024  
 - **End Date:** February 10, 2026  
-- **Total Duration:** ~16 Months (16 months + 7 days)
+- **Total Duration:** ~16 Months
 
 ---
 
@@ -66,18 +66,6 @@ All timestamps are in:
 
 ---
 
-## Data Characteristics
-
-- mid-frequency intraday index data  
-- Suitable for:
-  - Intraday backtesting  
-  - Volatility modeling  
-  - VWAP-based strategies  
-  - Microstructure research  
-  - Feature engineering for ML models  
-
----
-
 ## Data Source
 
 **Upstox API**
@@ -96,5 +84,5 @@ All timestamps are in:
 
 ## Connect
 
-[LinkedIn](https://www.linkedin.com/in/bh1rg1v/)
-[Reddit](https://www.reddit.com/user/bh1rg1vr1m/)
+- [LinkedIn](https://www.linkedin.com/in/bh1rg1v/)
+- [Reddit](https://www.reddit.com/user/bh1rg1vr1m/)
