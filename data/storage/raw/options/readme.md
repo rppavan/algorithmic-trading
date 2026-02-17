@@ -1,14 +1,6 @@
-# 1-Minute Index Data – NIFTY & SENSEX (Upstox)
+# Index Options Data - NIFTY & SENSEX
 
-This directory contains mid-frequency (1-minute timeframe) historical index data for **NIFTY** and **SENSEX**, sourced via the **Upstox API**.
-
-The dataset is intended for:
-
-- Algorithmic trading research  
-- Strategy backtesting  
-- Intraday volatility studies  
-- Portfolio simulations  
-- Machine learning model training  
+This directory contains mid-frequency (1-minute timeframe) historical index options data for **NIFTY** and **SENSEX**.
 
 ---
 
@@ -37,7 +29,7 @@ Each row represents one 1-minute candle.
 
 ## Data Access
 
-[Access the dataset here](https://drive.google.com/drive/folders/1QM_NSWSF0ny5fv9BxPXmDxG6fh5BftRY?usp=sharing)
+[Dataset Link](https://drive.google.com/drive/folders/1QM_NSWSF0ny5fv9BxPXmDxG6fh5BftRY?usp=sharing)
 
 Further updates to the link will be done here only.
 
@@ -74,15 +66,11 @@ All timestamps are in:
 
 ## Notes
 
-- Ensure proper timezone-aware parsing of timestamps.
-- Handle missing minutes appropriately during backtesting.
-- Volume may be zero for certain minutes.
-- `oi` may be zero depending on index data availability.
-- Recommended to validate trading session timings before analysis.
+- don’t lose money twice for the same reason.
 
 ---
 
 ## Connect
 
-- [LinkedIn](https://www.linkedin.com/in/bh1rg1v/)
-- [Reddit](https://www.reddit.com/user/bh1rg1vr1m/)
+- [LinkedIn] (https://www.linkedin.com/in/bh1rg1v/)
+- [Reddit] (https://www.reddit.com/user/bh1rg1vr1m/)
