@@ -76,10 +76,10 @@ df_sensex = pd.DataFrame(sensex_data)
 underlying_instruments["NIFTY50"]["rv_data"] = df_nifty
 underlying_instruments["SENSEX30"]["rv_data"] = df_sensex
 
-# Code to get LTP of the underlying instruments
+# # Code to get LTP of the underlying instruments
 
 
-base_url = "https://api.upstox.com/v3/market-quote/ltp"
+# base_url = "https://api.upstox.com/v3/market-quote/ltp"
 
 headers = {
     "Content-Type": "application/json",
@@ -87,39 +87,39 @@ headers = {
     "Authorization": f"Bearer {access_token}"
 }
 
-for name, details in underlying_instruments.items():
+# for name, details in underlying_instruments.items():
 
-    params = {
-        "instrument_key": details["instrument_key"]
-    }
+#     params = {
+#         "instrument_key": details["instrument_key"]
+#     }
 
-    response = requests.get(base_url, headers=headers, params=params)
+#     response = requests.get(base_url, headers=headers, params=params)
 
-    print(f"Fetching LTP for {name}...")
+#     print(f"Fetching LTP for {name}...")
 
-    if response.status_code != 200:
-        print(f"Error: {response.status_code}")
-        exit()
+#     if response.status_code != 200:
+#         print(f"Error: {response.status_code} - {response.text}")
+#         exit()
 
-    data = response.json().get("data", {})
+#     data = response.json().get("data", {})
 
-    if not data:
-        print("No data returned")
-        continue
+#     if not data:
+#         print("No data returned")
+#         continue
 
-    # Get the first (and only) key dynamically
-    instrument_data = next(iter(data.values()))
+#     # Get the first (and only) key dynamically
+#     instrument_data = next(iter(data.values()))
 
-    ltp = instrument_data.get("last_price")
+#     ltp = instrument_data.get("last_price")
 
-    underlying_instruments[name]["ltp"] = ltp
+#     underlying_instruments[name]["ltp"] = ltp
 
-    # print(f"LTP of {name}: {ltp}\n")
+#     # print(f"LTP of {name}: {ltp}\n")
 
-    # try:
-    #     print(json.dumps(response.json(), indent=4))
-    # except ValueError:
-    #     print(response.text)
+#     # try:
+#     #     print(json.dumps(response.json(), indent=4))
+#     # except ValueError:
+#     #     print(response.text)
 
 # print()
 
@@ -203,6 +203,45 @@ def analyse():
                 msg = []
                 continue
 
+        # Code to get LTP of the underlying instruments
+
+
+        base_url = "https://api.upstox.com/v3/market-quote/ltp"
+
+        # for name, details in underlying_instruments.items():
+
+        params = {
+            "instrument_key": details["instrument_key"]
+        }
+
+        response = requests.get(base_url, headers=headers, params=params)
+
+        print(f"Fetching LTP for {name}...")
+
+        if response.status_code != 200:
+            print(f"Error: {response.status_code} - {response.text}")
+            exit()
+
+        data = response.json().get("data", {})
+
+        if not data:
+            print("No data returned")
+            continue
+
+        # Get the first (and only) key dynamically
+        instrument_data = next(iter(data.values()))
+
+        ltp = instrument_data.get("last_price")
+
+        underlying_instruments[name]["ltp"] = ltp
+
+        # print(f"LTP of {name}: {ltp}\n")
+
+        # try:
+        #     print(json.dumps(response.json(), indent=4))
+        # except ValueError:
+        #     print(response.text)
+
         instrument_key = details["instrument_key"]
         expiry_date = details.get("latest_expiry")
 
@@ -218,11 +257,11 @@ def analyse():
         expiry_day = datetime.strptime(expiry_date, "%Y-%m-%d").strftime("%A")
 
         # Check if expiry day exists in mapping
-        # if expiry_day not in trade_opening_days:
-        #     print_msg(f"{name} expiry on {expiry_day} → Skipping (not configured)")
-        #     asyncio.run(send_to_me("\n".join(msg)))
-        #     msg = []
-        #     continue
+        if expiry_day not in trade_opening_days:
+            print_msg(f"{name} expiry on {expiry_day} → Skipping (not configured)")
+            asyncio.run(send_to_me("\n".join(msg)))
+            msg = []
+            continue
 
         trade_open_day = trade_opening_days[expiry_day]
 
@@ -316,6 +355,9 @@ def analyse():
                 upper_be_percent = ((upper_breakeven - ltp) / ltp) * 100
                 lower_be_percent = ((ltp - lower_breakeven) / ltp) * 100
 
+                abs_max_move = max(upper_be_percent, lower_be_percent)
+                breakeven_target = abs_max_move
+
                 upper_target = call_strike + (2 * total_cost)
                 lower_target = put_strike - (2 * total_cost)
 
@@ -323,13 +365,15 @@ def analyse():
                 lower_target_percent = ((ltp - lower_target) / ltp) * 100
 
                 abs_max_move = max(upper_target_percent, lower_target_percent)
+                profit_target = abs_max_move
 
-                target = abs_max_move
-
-                row = rv_data[rv_data['Peak Abs Change Percentage'] >= target].iloc[-1]
+                row = rv_data[rv_data['Peak Abs Change Percentage'] >= profit_target].iloc[-1]
                 target_percentile = row['Percentile']
 
-                print_msg(f"Total Cost of Setup = {total_cost}")
+                row = rv_data[rv_data['Peak Abs Change Percentage'] >= breakeven_target].iloc[-1]
+                breakeven_percentile = row['Percentile']
+
+                print_msg(f"Total Cost of Setup = {total_cost:.2f}")
                 print_msg(f"Cost as % of Spot = {cost_percent:.2f}%\n")
                 
                 print_msg(f"Upper Breakeven = {upper_breakeven}  (+{upper_be_percent:.2f}%)")
@@ -339,8 +383,37 @@ def analyse():
                 print_msg(f"Upper Target = {upper_target}  (+{upper_target_percent:.2f}%)")
                 print_msg(f"Lower Target = {lower_target}  (-{lower_target_percent:.2f}%)\n")
 
-                print_msg(f"Required Target Change {target:.2f}%")
-                print_msg(f"Probability is {target_percentile}%")
+                print_msg(f"Profit Target is - {profit_target:.2f}%")
+                print_msg(f"Probability is - {target_percentile}%\n")
+
+                print_msg(f"Breakeven Target is - {breakeven_target:.2f}%")
+                print_msg(f"Probability is - {breakeven_percentile}%")
+
+                # Save live analysis to CSV
+                analysis_df = pd.DataFrame([{
+                    'Timestamp': datetime.now(ist).strftime('%Y-%m-%d %H:%M:%S'),
+                    'Symbol': name,
+                    'LTP': ltp,
+                    'Expiry': expiry_date,
+                    'Lot Size': underlying_instruments[name]["lot_size"],
+                    'Call Strike': call_strike,
+                    'Call Cost': call_cost,
+                    'Put Strike': put_strike,
+                    'Put Cost': put_cost,
+                    'Total Cost': total_cost,
+                    'Upper Breakeven': upper_breakeven,
+                    'Lower Breakeven': lower_breakeven,
+                    'Upper Target': upper_target,
+                    'Lower Target': lower_target,
+                    'Profit Target': profit_target,
+                    'Target Percentile': target_percentile,
+                    'Breakeven Target': breakeven_target,
+                    'Breakeven Percentile': breakeven_percentile
+                }])
+                
+                OUTPUT_FOLDER = r"forward_testing\rv_iv_analysis"
+                analysis_file = os.path.join(OUTPUT_FOLDER, 'live_analysis.csv')
+                analysis_df.to_csv(analysis_file, mode='a', header=not os.path.exists(analysis_file), index=False)
 
                 if msg:  # Only send if msg is not empty
                     asyncio.run(send_to_me("\n".join(msg)))
@@ -528,7 +601,7 @@ ist = pytz.timezone('Asia/Kolkata')
 
 def run_analyse():
 
-    trading_window_start = datetime.strptime('15:00', '%H:%M').time()
+    trading_window_start = datetime.strptime('00:00', '%H:%M').time()
     trading_window_end = datetime.strptime('15:29:59', '%H:%M:%S').time()
 
     while True:
@@ -552,7 +625,7 @@ def run_monitor():
         current_time = now.time()
 
         if monitor_start <= current_time <= monitor_end:
-            monitor()
+            # monitor()
             time.sleep(1)
         else:
             time.sleep(1)

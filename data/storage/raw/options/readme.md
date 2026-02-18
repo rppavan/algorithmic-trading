@@ -72,5 +72,5 @@ All timestamps are in:
 
 ## Connect
 
-- [LinkedIn] (https://www.linkedin.com/in/bh1rg1v/)
-- [Reddit] (https://www.reddit.com/user/bh1rg1vr1m/)
+- [LinkedIn](https://www.linkedin.com/in/bh1rg1v/)
+- [Reddit](https://www.reddit.com/user/bh1rg1vr1m/)
