@@ -47,6 +47,7 @@ Each .csv file contains OHLCV data for a single index:
 | Low | Lowest price during the interval |
 | Close | Closing price |
 | Volume | Volume traded during the interval |
+| OI | Open Interest |
 
 ---
 
