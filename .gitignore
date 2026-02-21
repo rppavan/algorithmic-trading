@@ -18,3 +18,20 @@ venv/
 # data storage folders
 data/storage/options/
 broker/upstox/instruments/complete.json
+
+/data/storage/raw/equity/minute/
+/data/storage/raw/equity/5minute/
+/data/storage/raw/equity/day/
+
+/data/storage/raw/implied_volatility/
+/data/storage/raw/implied_volatility1/
+
+/data/storage/raw/index/
+/data/storage/raw/nifty50/
+
+/backtesting/previous_version/
+/backtesting/volatility/
+/backtesting/markov_models_org/
+/backtesting/ml/
+
+/data/storage/processed/equity/day
